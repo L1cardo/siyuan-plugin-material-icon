@@ -2,7 +2,7 @@
   "name": "siyuan-plugin-material-icon",
   "author": "Licardo",
   "url": "https://github.com/L1cardo/siyuan-plugin-material-icon",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "minAppVersion": "3.0.0",
   "backends": [
     "all"

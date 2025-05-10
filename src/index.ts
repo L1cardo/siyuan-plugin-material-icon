@@ -3,7 +3,7 @@ import "./index.scss";
 
 export default class SiyuanPluginMaterialIcon extends Plugin {
     async onload() {
-        await this.checkAndCopyIconPack();
+        await this.checkAndInstallIconPack();
     }
 
     async onunload() {
@@ -14,7 +14,7 @@ export default class SiyuanPluginMaterialIcon extends Plugin {
         await this.uninstallIconPack();
     }
 
-    async checkAndCopyIconPack() {
+    async checkAndInstallIconPack() {
         const targetPath = "/data/emojis/material-icon";
         const sourcePath = "/data/plugins/siyuan-plugin-material-icon/src/material-icon";
         try {
@@ -26,7 +26,7 @@ export default class SiyuanPluginMaterialIcon extends Plugin {
             if (data.code === 0 && data.data.length > 0) {
                 console.log("Material Icon 图标包存在！");
             } else {
-                console.log("Material Icon 图标包不存在，开始复制...");
+                console.log("Material Icon 图标包不存在，开始安装...");
                 var successCount = 0;
                 var failCount = 0;
 
@@ -63,10 +63,10 @@ export default class SiyuanPluginMaterialIcon extends Plugin {
                                 }
                             }
                         }
-                        console.log(`Material Icon 图标包复制完成！成功：${successCount}，失败：${failCount}`);
+                        console.log(`Material Icon 图标包安装完成！成功：${successCount}，失败：${failCount}`);
                     }
                 } catch (error) {
-                    console.error("Material Icon 图标包复制出错:", error);
+                    console.error("Material Icon 图标包安装出错:", error);
                 }
             }
         } catch (error) {
@@ -75,21 +75,34 @@ export default class SiyuanPluginMaterialIcon extends Plugin {
     }
 
     async uninstallIconPack() {
-        console.log("开始卸载 Material Icon 图标包...");
         const targetPath = "/data/emojis/material-icon";
         try {
-            const response = await fetch("/api/file/removeFile", {
+            const response = await fetch("/api/file/readDir", {
                 method: "POST",
                 body: JSON.stringify({ path: targetPath }),
             });
-            const responseData = await response.json();
-            if (responseData.code === 0) {
-                console.log("Material Icon 图标包卸载成功");
+            const data = await response.json();
+            if (data.code === 0 && data.data.length > 0) {
+                console.log("Material Icon 图标包存在，开始卸载...");
+                try {
+                    const response = await fetch("/api/file/removeFile", {
+                        method: "POST",
+                        body: JSON.stringify({ path: targetPath }),
+                    });
+                    const responseData = await response.json();
+                    if (responseData.code === 0) {
+                        console.log("Material Icon 图标包卸载成功");
+                    } else {
+                        console.log("Material Icon 图标包卸载失败");
+                    }
+                } catch (error) {
+                    console.error("Material Icon 图标包卸载出错:", error);
+                }
             } else {
-                console.log("Material Icon 图标包卸载失败");
+                console.log("Material Icon 图标包不存在，不用卸载");
             }
         } catch (error) {
-            console.error("Material Icon 图标包卸载出错:", error);
+            console.error("检测 Material Icon 图标包文件夹出错:", error);
         }
     }
 }
